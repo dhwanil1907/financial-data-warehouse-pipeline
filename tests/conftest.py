@@ -14,8 +14,11 @@ from pathlib import Path
 @pytest.fixture
 def in_memory_db():
     """Fresh in-memory DuckDB connection with star schema for each test."""
-    # Connect to :memory:, read and execute schema/create_tables.sql, yield, then close
-    # TODO: implement
+    from src.db import get_connection, execute_ddl
+    con = get_connection(":memory:")
+    execute_ddl(con, Path("schema/create_tables.sql"))
+    yield con
+    con.close()
 
 
 @pytest.fixture

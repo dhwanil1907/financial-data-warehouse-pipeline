@@ -14,7 +14,7 @@ _DDL_PATH = Path("schema/create_tables.sql")
 
 def get_connection(db_path: str = _DEFAULT_DB_PATH) -> duckdb.DuckDBPyConnection:
     """Return a DuckDB connection to db_path (file or ':memory:')."""
-    # TODO: implement
+    return duckdb.connect(db_path)
 
 
 def execute_ddl(
@@ -22,4 +22,5 @@ def execute_ddl(
     ddl_path: Path = _DDL_PATH,
 ) -> None:
     """Read DDL file and execute against the given connection."""
-    # TODO: implement
+    ddl = Path(ddl_path).read_text()
+    con.execute(ddl)
