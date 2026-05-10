@@ -1,35 +1,42 @@
-# Data
-data/raw/*.csv
+# ── Data ──────────────────────────────────────────────────────────────────────
+data/raw/
 data/processed/
 
-# Database
+# ── Database ──────────────────────────────────────────────────────────────────
 *.duckdb
+*.duckdb.wal
 
-# Python
+# ── Python ────────────────────────────────────────────────────────────────────
 __pycache__/
-*.pyc
-*.pyo
+*.py[cod]
 *.pyd
-.Python
 *.egg-info/
 dist/
 build/
 *.egg
+.Python
 
-# Virtual environment
+# ── Virtual environment ────────────────────────────────────────────────────────
 .venv/
 venv/
 env/
 
-# Testing
+# ── uv ────────────────────────────────────────────────────────────────────────
+uv.lock
+
+# ── Testing / coverage ────────────────────────────────────────────────────────
 .pytest_cache/
 .coverage
+.coverage.*
 htmlcov/
 
-# IDE
+# ── Spark ─────────────────────────────────────────────────────────────────────
+derby.log
+metastore_db/
+spark-warehouse/
+
+# ── macOS / IDE ───────────────────────────────────────────────────────────────
 .DS_Store
 .vscode/
 .idea/
-
-# uv
-uv.lock
+*.swp
