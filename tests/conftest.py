@@ -6,7 +6,6 @@ Fixtures:
 - sample_raw_df: minimal DataFrame matching lending_club_loans.csv columns
 """
 import pytest
-import duckdb
 import pandas as pd
 from pathlib import Path
 

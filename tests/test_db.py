@@ -6,7 +6,7 @@ Covers:
 - execute_ddl creates all five star schema tables
 """
 import duckdb
-from src.db import get_connection, execute_ddl
+from src.db import get_connection
 
 
 def test_get_connection_returns_duckdb_connection():

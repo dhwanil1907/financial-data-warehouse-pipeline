@@ -15,7 +15,6 @@ Covers (11 tests):
 - null_rate_report returns 0.0 for clean fixture data
 """
 import pandas as pd
-import pytest
 from src.transform import (
     clean_rate_column,
     parse_issue_date,
