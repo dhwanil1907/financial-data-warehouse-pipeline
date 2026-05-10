@@ -22,6 +22,7 @@ from src.transform import (
     build_dim_purpose,
     build_dim_time,
     build_fact_table,
+    filter_valid_loan_rows,
     null_rate_report,
 )
 
@@ -79,6 +80,11 @@ def run_pipeline(csv_path: Path, db_path: str) -> dict[str, int]:
 
         raw = load_raw_csv(str(csv_path))
         validate_schema(raw)
+        n_raw = len(raw)
+        raw = filter_valid_loan_rows(raw)
+        if len(raw) < n_raw:
+            print(f"\nDropped {n_raw - len(raw)} row(s) with non-numeric loan id (CSV footer/summary lines).")
+
         _print_quality_report(raw, QUALITY_COLUMNS, NULL_RATE_WARN_THRESHOLD)
 
         dim_borrower = build_dim_borrower(raw)

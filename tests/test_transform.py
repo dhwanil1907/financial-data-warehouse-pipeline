@@ -25,6 +25,7 @@ from src.transform import (
     build_dim_time,
     build_dim_purpose,
     build_fact_table,
+    filter_valid_loan_rows,
     null_rate_report,
 )
 
@@ -129,6 +130,15 @@ def test_build_fact_table_int_rate_is_float_dtype(sample_raw_df):
     dims = _build_all_dims(sample_raw_df)
     fact = build_fact_table(sample_raw_df, *dims)
     assert fact["int_rate"].dtype == float
+
+
+def test_filter_valid_loan_rows_drops_footer_lines(sample_raw_df):
+    footer = sample_raw_df.iloc[[0]].copy()
+    footer["id"] = "Total amount funded in policy code 1: 6417608175"
+    combined = pd.concat([sample_raw_df, footer], ignore_index=True)
+    out = filter_valid_loan_rows(combined)
+    assert len(out) == len(sample_raw_df)
+    assert out["id"].tolist() == sample_raw_df["id"].tolist()
 
 
 def test_null_rate_report_returns_zero_for_clean_data(sample_raw_df):

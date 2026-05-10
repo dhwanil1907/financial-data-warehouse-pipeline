@@ -10,6 +10,7 @@ Public API:
     build_dim_time(df)                time dimension DataFrame
     build_dim_purpose(df)             purpose dimension DataFrame
     build_fact_table(df, *dims)       fact_loans DataFrame with FK surrogates
+    filter_valid_loan_rows(df)        drop footer rows with non-numeric ``id``
     null_rate_report(df)              {column: null_fraction} for every column
     row_count_assertion(df, min_rows) raise AssertionError if row count too low
 """
@@ -54,6 +55,17 @@ def parse_issue_date(series: pd.Series) -> pd.DataFrame:
 def parse_term_months(series: pd.Series) -> pd.Series:
     """Extract the integer month count from a term string like ' 36 months'."""
     return series.str.strip().str.extract(r"(\d+)")[0].astype(int)
+
+
+def filter_valid_loan_rows(df: pd.DataFrame) -> pd.DataFrame:
+    """Return only rows whose ``id`` parses as a number (real loan rows).
+
+    Some Lending Club CSV exports append summary/footer lines where ``id``
+    holds text such as ``Total amount funded in policy code 1: ...``. Those
+    rows are dropped so ``loan_id`` can be stored as an integer.
+    """
+    loan_ids = pd.to_numeric(df["id"], errors="coerce")
+    return df.loc[loan_ids.notna()].copy()
 
 
 # ---------------------------------------------------------------------------
@@ -128,13 +140,14 @@ def build_fact_table(
     Transformations applied:
     - int_rate: % stripped, stored as decimal float
     - is_default: True when loan_status == 'Charged Off'
-    - loan_id: raw 'id' column cast to int
+    - loan_id: raw ``id`` parsed as integer (non-numeric ids should be removed
+      upstream via :func:`filter_valid_loan_rows`)
     """
     fact = df.copy()
 
     fact["int_rate"] = clean_rate_column(fact["int_rate"])
     fact["is_default"] = fact["loan_status"] == "Charged Off"
-    fact["loan_id"] = fact["id"].astype(int)
+    fact["loan_id"] = pd.to_numeric(fact["id"], errors="raise").astype("int64")
 
     # Derive year/month for time join
     time_parts = parse_issue_date(fact["issue_d"])
