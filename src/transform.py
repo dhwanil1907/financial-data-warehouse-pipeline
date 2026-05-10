@@ -21,8 +21,24 @@ import pandas as pd
 # ---------------------------------------------------------------------------
 
 def clean_rate_column(series: pd.Series) -> pd.Series:
-    """Strip trailing '%' and convert to a decimal float (12.99% → 0.1299)."""
-    return series.str.replace("%", "", regex=False).astype(float) / 100.0
+    """Normalize int_rate to a decimal float (e.g. 12.99% or 12.99 → 0.1299).
+
+    If the column is numeric (pandas inferred floats from CSV), values greater
+    than 1 are treated as percent points (10.99 → 0.1099); values in (0, 1] are
+    kept as decimals. Object/string columns strip ``%`` and divide by 100.
+    """
+    if pd.api.types.is_numeric_dtype(series):
+        out = pd.to_numeric(series, errors="coerce").astype(float)
+        over_one = out.notna() & (out > 1.0)
+        out = out.copy()
+        out.loc[over_one] = out.loc[over_one] / 100.0
+        return out
+    stripped = (
+        series.astype(str)
+        .str.replace("%", "", regex=False)
+        .str.strip()
+    )
+    return pd.to_numeric(stripped, errors="coerce").astype(float) / 100.0
 
 
 def parse_issue_date(series: pd.Series) -> pd.DataFrame:

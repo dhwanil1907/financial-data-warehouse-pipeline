@@ -37,6 +37,19 @@ def test_clean_rate_column_strips_percent_and_casts_to_float():
     assert abs(result.iloc[1] - 0.1849) < 1e-6
 
 
+def test_clean_rate_column_handles_numeric_percent_points():
+    series = pd.Series([10.99, 18.49], dtype="float64")
+    result = clean_rate_column(series)
+    assert abs(result.iloc[0] - 0.1099) < 1e-6
+    assert abs(result.iloc[1] - 0.1849) < 1e-6
+
+
+def test_clean_rate_column_sub_one_percent_string():
+    series = pd.Series(["0.99%"])
+    result = clean_rate_column(series)
+    assert abs(result.iloc[0] - 0.0099) < 1e-9
+
+
 def test_parse_issue_date_extracts_year_month_quarter():
     series = pd.Series(["Jan-2015", "Mar-2017"])
     result = parse_issue_date(series)
