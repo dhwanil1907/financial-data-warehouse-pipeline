@@ -6,6 +6,8 @@ End-to-end **Lending Club** loan data pipeline built with Python, DuckDB, PySpar
 
 **Dataset:** [Kaggle — Lending Club Loan Data](https://www.kaggle.com/datasets/wordsforthewise/lending-club) (~2.26M loans, 2007–2018). Place `accepted_2007_to_2018Q4.csv` at `data/raw/lending_club_loans.csv`.
 
+**Docs:** [concepts.md](concepts.md) · [docs/architecture.md](docs/architecture.md) · [schema/erd_notes.md](schema/erd_notes.md)
+
 ---
 
 ## Quick start
@@ -36,6 +38,8 @@ uv run streamlit run dashboard/app.py
 ```
 
 Open **http://localhost:8501**. Uses `warehouse.duckdb` by default — override with `DUCKDB_PATH=/path/to/db`.
+
+**DuckDB lock:** do not run the ETL pipeline and the dashboard against the same `.duckdb` file at the same time. Finish (or stop) the pipeline before opening Streamlit, or you will get a conflicting-lock `IOException`.
 
 ### 3. Run tests
 
@@ -94,6 +98,8 @@ sql/analytics/     dashboard/app.py
 (13 SQL files)     (Streamlit + Plotly)
 ```
 
+See also [docs/architecture.md](docs/architecture.md) for the full data-flow write-up.
+
 ---
 
 ## Project layout
@@ -110,11 +116,12 @@ sql/analytics/     dashboard/app.py
 │   ├── create_tables.sql    # Star schema DDL (5 tables)
 │   └── erd_notes.md         # Normalization notes + dbdiagram.io source
 ├── sql/
-│   ├── ddl/star_schema.sql
+│   ├── ddl/star_schema.sql  # Same DDL as schema/create_tables.sql
 │   └── analytics/           # 13 analytical queries (CTEs + window fns)
 ├── dashboard/
 │   └── app.py               # Streamlit dashboard (4 Plotly charts)
 ├── tests/                   # pytest suite (28 passing)
+├── concepts.md              # Concepts used in this project
 ├── docs/architecture.md
 └── data/
     ├── raw/                  # lending_club_loans.csv (gitignored)
@@ -125,4 +132,4 @@ sql/analytics/     dashboard/app.py
 
 ## ERD
 
-See `schema/erd_notes.md` — paste the dbdiagram.io block at [dbdiagram.io](https://dbdiagram.io/d) to visualise the star schema.
+See [schema/erd_notes.md](schema/erd_notes.md) — paste the dbdiagram.io block at [dbdiagram.io](https://dbdiagram.io/d) to visualise the star schema.

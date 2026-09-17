@@ -1,6 +1,9 @@
 # ── Data ──────────────────────────────────────────────────────────────────────
-data/raw/
-data/processed/
+# Keep directory layout in git; ignore large local files.
+data/raw/**
+!data/raw/.gitkeep
+data/processed/**
+!data/processed/.gitkeep
 
 # ── Database ──────────────────────────────────────────────────────────────────
 *.duckdb
@@ -20,9 +23,6 @@ build/
 .venv/
 venv/
 env/
-
-# ── uv ────────────────────────────────────────────────────────────────────────
-uv.lock
 
 # ── Testing / coverage ────────────────────────────────────────────────────────
 .pytest_cache/
