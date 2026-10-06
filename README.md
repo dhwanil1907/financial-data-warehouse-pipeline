@@ -1,12 +1,52 @@
 # Financial Data Warehouse Pipeline
 
-End-to-end **Lending Club** loan data pipeline built with Python, DuckDB, PySpark, and Streamlit.
+End-to-end **Lending Club** loan data pipeline: raw CSV → star-schema DuckDB warehouse → SQL analytics and an interactive Streamlit dashboard, with an optional PySpark → Parquet path.
 
 **Stack:** Python 3.11 · pandas · DuckDB · PySpark · Streamlit · Plotly · pytest · uv · ruff
 
 **Dataset:** [Kaggle — Lending Club Loan Data](https://www.kaggle.com/datasets/wordsforthewise/lending-club) (~2.26M loans, 2007–2018). Place `accepted_2007_to_2018Q4.csv` at `data/raw/lending_club_loans.csv`.
 
+**Repo:** [github.com/dhwanil1907/financial-data-warehouse-pipeline](https://github.com/dhwanil1907/financial-data-warehouse-pipeline)
+
 **Docs:** [concepts.md](concepts.md) · [docs/architecture.md](docs/architecture.md) · [schema/erd_notes.md](schema/erd_notes.md)
+
+---
+
+## Features
+
+- Schema validation and data-quality checks at the extract stage
+- Star schema (1 fact + 4 dimensions) with surrogate keys, loaded idempotently via `INSERT OR IGNORE`
+- 13 analytical SQL queries using CTEs and window functions
+- Streamlit dashboard with 4 Plotly charts
+- Optional PySpark aggregations written to Parquet
+- pytest suite (28 passing) and reproducible setup via uv
+
+## Warehouse tables
+
+| Table | Rows |
+|---|---|
+| `fact_loans` | 2,260,668 |
+| `dim_borrower` | 90,211 |
+| `dim_loan_grade` | 35 |
+| `dim_purpose` | 28 |
+| `dim_time` | 139 |
+
+## Key metrics
+
+| Metric | Value |
+|---|---|
+| Loans analyzed | 2,260,668 |
+| Overall default rate | 11.88% |
+| Loan amount range | $500 – $40,000 |
+| Average loan amount | ≈ $15,047 |
+
+Default rate by loan grade (`sql/analytics/01_default_rate_by_grade.sql`):
+
+| Grade | A | B | C | D | E | F | G |
+|---|---|---|---|---|---|---|---|
+| Default rate | 3.28% | 7.92% | 13.18% | 18.82% | 26.57% | 34.67% | 37.48% |
+
+Default risk rises monotonically from grade A to G — roughly 11× higher for G than A.
 
 ---
 
@@ -98,7 +138,7 @@ sql/analytics/     dashboard/app.py
 (13 SQL files)     (Streamlit + Plotly)
 ```
 
-See also [docs/architecture.md](docs/architecture.md) for the full data-flow write-up.
+See [docs/architecture.md](docs/architecture.md) for the full data-flow write-up.
 
 ---
 

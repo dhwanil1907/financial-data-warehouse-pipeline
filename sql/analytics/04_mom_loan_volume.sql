@@ -13,7 +13,7 @@ mom AS (
     SELECT year,
            month,
            loan_cnt,
-           funded_vol,
+           funded_vol,wr
            LAG(loan_cnt) OVER (ORDER BY year, month) AS prev_loan_cnt,
            LAG(funded_vol) OVER (ORDER BY year, month) AS prev_funded_vol
     FROM monthly
