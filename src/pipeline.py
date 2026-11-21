@@ -1,7 +1,7 @@
 """
 ETL orchestrator — extract → transform → load into DuckDB.
 
-Run from the project root so `schema/create_tables.sql` resolves:
+Run from the project root so `sql/schema/create_tables.sql` resolves:
 
     uv run python -m src.pipeline --csv data/raw/lending_club_loans.csv --db warehouse.duckdb
 """

@@ -46,4 +46,4 @@ ASCII overview (raw file → consumption):
 
 ## Entity relationship (ERD)
 
-Normalization notes and a **dbdiagram.io** source block live in `schema/erd_notes.md`. Open [dbdiagram.io](https://dbdiagram.io/d) and paste the fenced block from that file to render the star schema.
+Normalization notes and a **dbdiagram.io** source block live in [erd.md](erd.md). Open [dbdiagram.io](https://dbdiagram.io/d) and paste the fenced block from that file to render the star schema.

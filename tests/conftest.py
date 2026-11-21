@@ -15,7 +15,7 @@ def in_memory_db():
     """Fresh in-memory DuckDB connection with star schema for each test."""
     from src.db import get_connection, execute_ddl
     con = get_connection(":memory:")
-    execute_ddl(con, Path("schema/create_tables.sql"))
+    execute_ddl(con, Path("sql/schema/create_tables.sql"))
     yield con
     con.close()
 

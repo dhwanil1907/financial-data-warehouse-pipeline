@@ -8,7 +8,7 @@ End-to-end **Lending Club** loan data pipeline: raw CSV → star-schema DuckDB w
 
 **Repo:** [github.com/dhwanil1907/financial-data-warehouse-pipeline](https://github.com/dhwanil1907/financial-data-warehouse-pipeline)
 
-**Docs:** [concepts.md](concepts.md) · [docs/architecture.md](docs/architecture.md) · [schema/erd_notes.md](schema/erd_notes.md)
+**Docs:** [docs/concepts.md](docs/concepts.md) · [docs/architecture.md](docs/architecture.md) · [docs/erd.md](docs/erd.md)
 
 ---
 
@@ -155,17 +155,17 @@ See [docs/architecture.md](docs/architecture.md) for the full data-flow write-up
 │   ├── load.py              # DuckDB INSERT OR IGNORE helpers
 │   ├── db.py                # DuckDB connection + DDL runner
 │   └── spark_transform.py   # PySpark aggregations + Parquet writer
-├── schema/
-│   ├── create_tables.sql    # Star schema DDL (5 tables)
-│   └── erd_notes.md         # Normalization notes + dbdiagram.io source
 ├── sql/
-│   ├── ddl/star_schema.sql  # Same DDL as schema/create_tables.sql
-│   └── analytics/           # 13 analytical queries (CTEs + window fns)
+│   ├── schema/
+│   │   └── create_tables.sql  # Star schema DDL (5 tables)
+│   └── analytics/             # 13 analytical queries (CTEs + window fns), see its README
 ├── dashboard/
 │   └── app.py               # Streamlit dashboard (4 Plotly charts)
+├── docs/
+│   ├── architecture.md      # Data-flow write-up
+│   ├── concepts.md          # Concepts used in this project
+│   └── erd.md               # Normalization notes + dbdiagram.io source
 ├── tests/                   # pytest suite (30 passing)
-├── concepts.md              # Concepts used in this project
-├── docs/architecture.md
 └── data/
     ├── raw/                  # lending_club_loans.csv (gitignored)
     └── processed/            # Parquet output from Spark (gitignored)
@@ -175,4 +175,4 @@ See [docs/architecture.md](docs/architecture.md) for the full data-flow write-up
 
 ## ERD
 
-See [schema/erd_notes.md](schema/erd_notes.md) — paste the dbdiagram.io block at [dbdiagram.io](https://dbdiagram.io/d) to visualise the star schema.
+See [docs/erd.md](docs/erd.md) — paste the dbdiagram.io block at [dbdiagram.io](https://dbdiagram.io/d) to visualise the star schema.
