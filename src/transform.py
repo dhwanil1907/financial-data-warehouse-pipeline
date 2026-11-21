@@ -16,10 +16,35 @@ Public API:
 """
 import pandas as pd
 
+# Terminal loan outcomes. Any other status (Current, Late, In Grace Period)
+# is still in progress, so its outcome is unknown.
+DEFAULT_STATUSES = frozenset({
+    "Charged Off",
+    "Default",
+    "Does not meet the credit policy. Status:Charged Off",
+})
+PAID_STATUSES = frozenset({
+    "Fully Paid",
+    "Does not meet the credit policy. Status:Fully Paid",
+})
+
 
 # ---------------------------------------------------------------------------
 # Column cleaners
 # ---------------------------------------------------------------------------
+
+def derive_is_default(loan_status: pd.Series) -> pd.Series:
+    """Map loan_status to True (defaulted), False (fully paid) or NA (unresolved).
+
+    Leaving unresolved loans as NA keeps them out of AVG(is_default), so default
+    rates are computed over resolved loans only instead of being diluted by
+    loans that have not finished yet.
+    """
+    is_default = pd.Series(pd.NA, index=loan_status.index, dtype="boolean")
+    is_default.loc[loan_status.isin(DEFAULT_STATUSES)] = True
+    is_default.loc[loan_status.isin(PAID_STATUSES)] = False
+    return is_default
+
 
 def clean_rate_column(series: pd.Series) -> pd.Series:
     """Normalize int_rate to a decimal float (e.g. 12.99% or 12.99 → 0.1299).
@@ -139,14 +164,15 @@ def build_fact_table(
 
     Transformations applied:
     - int_rate: % stripped, stored as decimal float
-    - is_default: True when loan_status == 'Charged Off'
+    - is_default: True for defaulted loans, False for fully paid, NA while
+      the loan is still in progress (see :func:`derive_is_default`)
     - loan_id: raw ``id`` parsed as integer (non-numeric ids should be removed
       upstream via :func:`filter_valid_loan_rows`)
     """
     fact = df.copy()
 
     fact["int_rate"] = clean_rate_column(fact["int_rate"])
-    fact["is_default"] = fact["loan_status"] == "Charged Off"
+    fact["is_default"] = derive_is_default(fact["loan_status"])
     fact["loan_id"] = pd.to_numeric(fact["id"], errors="raise").astype("int64")
 
     # Derive year/month for time join

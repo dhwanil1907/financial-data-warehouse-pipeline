@@ -115,7 +115,12 @@ def main() -> None:
     c1, c2, c3, c4 = st.columns(4)
     c1.metric("Total loans", f"{int(kpi['n_loans']):,}")
     c2.metric("Avg loan size ($K)", f"{kpi['avg_loan_k']:.1f}")
-    c3.metric("Default rate (%)", f"{kpi['default_pct']:.2f}")
+    c3.metric(
+        "Default rate (%)",
+        f"{kpi['default_pct']:.2f}",
+        help="Share of resolved loans (Fully Paid or defaulted). "
+        "Loans still in progress are excluded.",
+    )
     c4.metric("Total funded ($B)", f"{kpi['funded_b']:.2f}")
 
     st.subheader("Default rate by grade")

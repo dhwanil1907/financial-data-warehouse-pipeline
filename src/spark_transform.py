@@ -17,6 +17,8 @@ from pathlib import Path
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql import functions as F
 
+from src.transform import DEFAULT_STATUSES, PAID_STATUSES
+
 
 def create_spark_session(app_name: str = "financial-dw") -> SparkSession:
     """Return a SparkSession in local mode suitable for laptop-sized runs."""
@@ -36,12 +38,16 @@ def _read_loans_csv(spark: SparkSession, csv_path: str) -> DataFrame:
     return (
         df.withColumn("loan_amnt", F.col("loan_amnt").cast("double"))
         .withColumn("funded_amnt", F.col("funded_amnt").cast("double"))
-        .withColumn("is_default", F.col("loan_status") == F.lit("Charged Off"))
+        .withColumn(
+            "is_default",
+            F.when(F.col("loan_status").isin(*sorted(DEFAULT_STATUSES)), F.lit(True))
+            .when(F.col("loan_status").isin(*sorted(PAID_STATUSES)), F.lit(False)),
+        )
     )
 
 
 def compute_default_rate_by_grade(df: DataFrame) -> DataFrame:
-    """Group by LC letter grade; default_rate = share of Charged Off loans."""
+    """Group by LC letter grade; default_rate = share of defaulted loans among resolved ones."""
     return (
         df.groupBy("grade")
         .agg(F.avg(F.col("is_default").cast("double")).alias("default_rate"))

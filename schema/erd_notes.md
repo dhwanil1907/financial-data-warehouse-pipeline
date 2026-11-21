@@ -16,8 +16,10 @@ dimension tables. Normalization decisions:
 - **dim_purpose** deduplicates on `(purpose, term)` — roughly 30 combinations.
   Keeping `term` here avoids adding it to `fact_loans`, reducing row width.
 - **fact_loans** carries every per-loan numeric measure plus the four FK surrogates.
-  `is_default` is a pre-computed boolean (TRUE when `loan_status = 'Charged Off'`)
-  to avoid string comparisons in every analytic query.
+  `is_default` is a pre-computed boolean (TRUE for Charged Off / Default, FALSE for
+  Fully Paid, NULL while the loan is still in progress) to avoid string comparisons
+  in every analytic query. Because unresolved loans are NULL, `AVG(is_default)` is
+  the default rate over resolved loans only.
 
 ## Relationships
 

@@ -17,6 +17,7 @@ Covers (11 tests):
 import pandas as pd
 from src.transform import (
     clean_rate_column,
+    derive_is_default,
     parse_issue_date,
     parse_term_months,
     build_dim_borrower,
@@ -27,6 +28,28 @@ from src.transform import (
     filter_valid_loan_rows,
     null_rate_report,
 )
+
+
+def test_derive_is_default_maps_resolved_and_unresolved_statuses():
+    statuses = pd.Series([
+        "Fully Paid",
+        "Charged Off",
+        "Default",
+        "Does not meet the credit policy. Status:Charged Off",
+        "Does not meet the credit policy. Status:Fully Paid",
+        "Current",
+        "Late (31-120 days)",
+        "In Grace Period",
+    ])
+    result = derive_is_default(statuses)
+    assert result.iloc[:5].tolist() == [False, True, True, True, False]
+    assert result.iloc[5:].isna().all()
+
+
+def test_derive_is_default_excludes_unresolved_loans_from_the_rate():
+    statuses = pd.Series(["Fully Paid", "Charged Off", "Current", "Current"])
+    result = derive_is_default(statuses)
+    assert result.astype("float").mean() == 0.5
 
 
 def test_clean_rate_column_strips_percent_and_casts_to_float():

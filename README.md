@@ -36,17 +36,20 @@ End-to-end **Lending Club** loan data pipeline: raw CSV → star-schema DuckDB w
 | Metric | Value |
 |---|---|
 | Loans analyzed | 2,260,668 |
-| Overall default rate | 11.88% |
+| Resolved loans (Fully Paid or defaulted) | 1,348,099 |
+| Overall default rate (resolved loans) | 19.98% |
 | Loan amount range | $500 – $40,000 |
 | Average loan amount | ≈ $15,047 |
+
+**Default definition:** `is_default` is TRUE for Charged Off, Default and the "Does not meet the credit policy" Charged Off status, FALSE for Fully Paid, and NULL for loans still in progress (Current, Late, In Grace Period). Rates are averaged over resolved loans only, so in-progress loans don't dilute them.
 
 Default rate by loan grade (`sql/analytics/01_default_rate_by_grade.sql`):
 
 | Grade | A | B | C | D | E | F | G |
 |---|---|---|---|---|---|---|---|
-| Default rate | 3.28% | 7.92% | 13.18% | 18.82% | 26.57% | 34.67% | 37.48% |
+| Default rate | 6.04% | 13.40% | 22.44% | 30.38% | 38.43% | 45.15% | 49.67% |
 
-Default risk rises monotonically from grade A to G — roughly 11× higher for G than A.
+Default risk rises monotonically from grade A to G — roughly 8× higher for G than A.
 
 ---
 
