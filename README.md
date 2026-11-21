@@ -19,7 +19,7 @@ End-to-end **Lending Club** loan data pipeline: raw CSV → star-schema DuckDB w
 - 13 analytical SQL queries using CTEs and window functions
 - Streamlit dashboard with 4 Plotly charts
 - Optional PySpark aggregations written to Parquet
-- pytest suite (28 passing) and reproducible setup via uv
+- pytest suite (30 passing) and reproducible setup via uv
 
 ## Warehouse tables
 
@@ -90,7 +90,7 @@ Open **http://localhost:8501**. Uses `warehouse.duckdb` by default — override 
 uv run pytest tests/ -v
 ```
 
-28 pass, 5 Spark tests skipped unless a real JDK is on `PATH`.
+30 pass, 5 Spark tests skipped unless a real JDK is on `PATH`.
 
 ### 4. SQL analytics (ad-hoc)
 
@@ -163,7 +163,7 @@ See [docs/architecture.md](docs/architecture.md) for the full data-flow write-up
 │   └── analytics/           # 13 analytical queries (CTEs + window fns)
 ├── dashboard/
 │   └── app.py               # Streamlit dashboard (4 Plotly charts)
-├── tests/                   # pytest suite (28 passing)
+├── tests/                   # pytest suite (30 passing)
 ├── concepts.md              # Concepts used in this project
 ├── docs/architecture.md
 └── data/
