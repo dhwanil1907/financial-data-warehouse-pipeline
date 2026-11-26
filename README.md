@@ -181,6 +181,15 @@ sql/analytics/     dashboard/app.py
 
 See [docs/architecture.md](docs/architecture.md) for the full data-flow write-up.
 
+### Why a star schema?
+
+The source is one flat CSV, and at 2.26M rows a single DuckDB table would answer the same questions. The star schema is a deliberate warehouse-modeling choice, with a cost and some benefits:
+
+- **Less repetition.** Descriptive attributes sit in small dimensions (35 grades, 28 purpose/term pairs, 139 months, 90,211 borrower profiles) instead of repeating on every fact row, and `fact_loans` joins to them on integer surrogate keys.
+- **Enforced integrity.** The DDL declares primary, foreign and unique keys, and the pipeline fails the run on null keys, repeated `loan_id`s or row-count mismatches.
+- **Cost:** every analysis needs joins, which a flat table would avoid.
+- **`dim_borrower` holds borrower *segments*** (state, ZIP, home ownership, employment length, verification status), not individuals, because the public data has no usable borrower ID.
+
 ---
 
 ## Project layout
