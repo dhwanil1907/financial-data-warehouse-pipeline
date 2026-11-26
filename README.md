@@ -2,6 +2,8 @@
 
 End-to-end **Lending Club** loan data pipeline: raw CSV → star-schema DuckDB warehouse → SQL analytics and an interactive Streamlit dashboard, with an optional PySpark → Parquet path.
 
+![Streamlit dashboard showing KPIs and default rate by grade](docs/dashboard.png)
+
 **Stack:** Python 3.11 · pandas · DuckDB · PySpark · Streamlit · Plotly · scikit-learn · LightGBM · SHAP · pytest · uv · ruff
 
 **Dataset:** [Kaggle — Lending Club Loan Data](https://www.kaggle.com/datasets/wordsforthewise/lending-club) (~2.26M loans, 2007–2018). Place `accepted_2007_to_2018Q4.csv` at `data/raw/lending_club_loans.csv`.
@@ -199,6 +201,7 @@ See [docs/architecture.md](docs/architecture.md) for the full data-flow write-up
 │   └── app.py               # Streamlit dashboard (4 Plotly charts)
 ├── docs/
 │   ├── architecture.md      # Data-flow write-up
+│   ├── dashboard.png        # Screenshot used at the top of this README
 │   └── concepts.md          # Concepts used in this project
 ├── notebooks/
 │   ├── default_model.ipynb  # logistic regression vs LightGBM, plus cutoff vs profit
