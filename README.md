@@ -1,10 +1,10 @@
 # Financial Data Warehouse Pipeline
 
-End-to-end **Lending Club** loan data pipeline: raw CSV → star-schema DuckDB warehouse → SQL analytics and an interactive Streamlit dashboard, with an optional PySpark → Parquet path.
+End-to-end **Lending Club** loan data pipeline: raw CSV → star-schema DuckDB warehouse → SQL analytics and an interactive Streamlit dashboard.
 
 ![Streamlit dashboard showing KPIs and default rate by grade](docs/dashboard.png)
 
-**Stack:** Python 3.11 · pandas · DuckDB · PySpark · Streamlit · Plotly · scikit-learn · LightGBM · SHAP · pytest · uv · ruff
+**Stack:** Python 3.11 · pandas · DuckDB · Streamlit · Plotly · scikit-learn · LightGBM · SHAP · pytest · uv · ruff
 
 **Dataset:** [Kaggle — Lending Club Loan Data](https://www.kaggle.com/datasets/wordsforthewise/lending-club) (~2.26M loans, 2007–2018). Place `accepted_2007_to_2018Q4.csv` at `data/raw/lending_club_loans.csv`.
 
@@ -19,7 +19,6 @@ End-to-end **Lending Club** loan data pipeline: raw CSV → star-schema DuckDB w
 - Star schema (1 fact + 4 dimensions) with surrogate keys, loaded in one transaction with row-count verification, so a failed run leaves the previous warehouse intact
 - 13 analytical SQL queries using CTEs and window functions
 - Streamlit dashboard with 4 Plotly charts
-- Optional PySpark aggregations written to Parquet
 - Default-prediction notebook: logistic regression vs LightGBM on a time-based split, plus an approval-cutoff vs profit analysis
 - pytest suite (39 passing) and reproducible setup via uv
 
@@ -118,7 +117,7 @@ Open **http://localhost:8501**. Uses `warehouse.duckdb` by default — override 
 uv run pytest tests/ -v
 ```
 
-39 pass; the 5 Spark tests are skipped unless Spark can start (needs JDK 17 or 21).
+39 tests pass.
 
 ### 4. SQL analytics (ad-hoc)
 
@@ -128,15 +127,7 @@ duckdb warehouse.duckdb < sql/analytics/01_default_rate_by_grade.sql
 
 All 13 queries are in `sql/analytics/`.
 
-### 5. Spark → Parquet (optional, requires JDK 17 or 21)
-
-```bash
-uv run python -m src.spark_transform --csv data/raw/lending_club_loans.csv --output-dir data/processed
-```
-
-Writes `data/processed/raw_loans/`, `default_rate_by_grade/`, `avg_loan_by_year/`.
-
-### 6. Default model notebook (optional)
+### 5. Default model notebook (optional)
 
 Needs the warehouse from step 1. The modeling packages live in their own dependency group:
 
@@ -151,13 +142,10 @@ uv run --group modeling jupyter nbconvert --execute --to notebook --inplace note
 ```
 data/raw/lending_club_loans.csv
           │
-    ┌─────┴──────────────────────┐
-    ▼                            ▼
-┌──────────────┐        ┌─────────────────────┐
-│  extract.py  │        │ spark_transform.py  │  (optional, needs JVM;
-│ validate     │        │ reads the CSV       │   separate path)
-│ schema       │        │ directly → Parquet  │
-└──────┬───────┘        └─────────────────────┘
+          ▼
+┌──────────────┐
+│  extract.py  │  validate schema
+└──────┬───────┘
        │
        ▼
 ┌──────────────┐
@@ -191,8 +179,7 @@ See [docs/architecture.md](docs/architecture.md) for the full data-flow write-up
 │   ├── extract.py           # CSV load + schema validation
 │   ├── transform.py         # dim/fact builders, data quality helpers
 │   ├── load.py              # DuckDB INSERT OR IGNORE helpers
-│   ├── db.py                # DuckDB connection + DDL runner
-│   └── spark_transform.py   # PySpark aggregations + Parquet writer
+│   └── db.py                # DuckDB connection + DDL runner
 ├── sql/
 │   ├── schema/
 │   │   └── create_tables.sql  # Star schema DDL (5 tables)
@@ -208,8 +195,7 @@ See [docs/architecture.md](docs/architecture.md) for the full data-flow write-up
 │   └── metrics.json         # saved model metrics
 ├── tests/                   # pytest suite (39 passing)
 ├── data/
-│   ├── raw/                  # lending_club_loans.csv (gitignored)
-│   └── processed/            # Parquet output from Spark (gitignored)
+│   └── raw/                  # lending_club_loans.csv (gitignored)
 ├── pyproject.toml           # dependencies and Python version
 ├── uv.lock                  # locked dependency versions
 ├── .python-version          # Python 3.11 for uv

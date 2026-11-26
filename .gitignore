@@ -2,8 +2,6 @@
 # Keep directory layout in git; ignore large local files.
 data/raw/**
 !data/raw/.gitkeep
-data/processed/**
-!data/processed/.gitkeep
 
 # ── Database ──────────────────────────────────────────────────────────────────
 *.duckdb
@@ -29,11 +27,6 @@ env/
 .coverage
 .coverage.*
 htmlcov/
-
-# ── Spark ─────────────────────────────────────────────────────────────────────
-derby.log
-metastore_db/
-spark-warehouse/
 
 # ── macOS / IDE ───────────────────────────────────────────────────────────────
 .DS_Store

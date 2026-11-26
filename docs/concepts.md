@@ -116,25 +116,7 @@ SELECT * FROM mom;
 
 ---
 
-## 9. PySpark
-
-**Apache Spark** is a distributed data processing framework. **PySpark** is its Python API. In this project it is used as an optional aggregation layer that reads the raw CSV and writes summarised **Parquet** files.
-
-**Why Spark?**
-- Demonstrates the same analytics at scale — Spark can process data that doesn't fit in a single machine's RAM.
-- In production, Spark would replace the pandas transform step for very large datasets.
-
----
-
-## 10. Parquet
-
-**Parquet** is a columnar binary file format designed for analytical workloads. Unlike CSV, it stores data by column, compresses efficiently, and preserves schema (types).
-
-Used by `src/spark_transform.py` to write `data/processed/raw_loans/`, `default_rate_by_grade/`, `avg_loan_by_year/`.
-
----
-
-## 11. Streamlit
+## 9. Streamlit
 
 **Streamlit** is a Python library that turns scripts into interactive web apps. No HTML/CSS/JS required — widgets and charts are declared in Python.
 
@@ -147,7 +129,7 @@ Used by `src/spark_transform.py` to write `data/processed/raw_loans/`, `default_
 
 ---
 
-## 12. Plotly Express
+## 10. Plotly Express
 
 **Plotly Express** is a high-level charting library that produces interactive Plotly figures in one line of code.
 
@@ -159,22 +141,21 @@ Charts in the dashboard:
 
 ---
 
-## 13. pytest
+## 11. pytest
 
 **pytest** is Python's standard test framework. Tests in `tests/` use:
 - **Fixtures** (`conftest.py`) — reusable setup (in-memory DuckDB, sample DataFrame).
 - **`tmp_path`** — pytest-provided temporary directory per test.
-- **`pytest.mark.skipif`** — conditionally skip Spark tests when no JDK is present.
 - **`pytest.raises`** — assert that expected exceptions are raised.
 
 ---
 
-## 14. ruff
+## 12. ruff
 
 **ruff** is a fast Python linter written in Rust. It replaces flake8 + isort + pyupgrade in a single tool. Used here to enforce import ordering, catch unused imports, and flag style issues.
 
 ---
 
-## 15. uv
+## 13. uv
 
 **uv** is a fast Python package and project manager (replaces pip + virtualenv + pip-tools). `uv sync` installs all dependencies from `pyproject.toml` into a `.venv` in seconds.
