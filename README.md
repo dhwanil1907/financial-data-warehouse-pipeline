@@ -2,7 +2,7 @@
 
 End-to-end **Lending Club** loan data pipeline: raw CSV → star-schema DuckDB warehouse → SQL analytics and an interactive Streamlit dashboard, with an optional PySpark → Parquet path.
 
-**Stack:** Python 3.11 · pandas · DuckDB · PySpark · Streamlit · Plotly · pytest · uv · ruff
+**Stack:** Python 3.11 · pandas · DuckDB · PySpark · Streamlit · Plotly · scikit-learn · LightGBM · SHAP · pytest · uv · ruff
 
 **Dataset:** [Kaggle — Lending Club Loan Data](https://www.kaggle.com/datasets/wordsforthewise/lending-club) (~2.26M loans, 2007–2018). Place `accepted_2007_to_2018Q4.csv` at `data/raw/lending_club_loans.csv`.
 
@@ -18,6 +18,7 @@ End-to-end **Lending Club** loan data pipeline: raw CSV → star-schema DuckDB w
 - 13 analytical SQL queries using CTEs and window functions
 - Streamlit dashboard with 4 Plotly charts
 - Optional PySpark aggregations written to Parquet
+- Default-prediction notebook: logistic regression vs LightGBM on a time-based split
 - pytest suite (39 passing) and reproducible setup via uv
 
 ## Warehouse tables
@@ -49,6 +50,22 @@ Default rate by loan grade (`sql/analytics/01_default_rate_by_grade.sql`):
 | Default rate | 6.04% | 13.40% | 22.44% | 30.38% | 38.43% | 45.15% | 49.67% |
 
 Default risk rises monotonically from grade A to G — roughly 8× higher for G than A.
+
+## Default model
+
+[`notebooks/default_model.ipynb`](notebooks/default_model.ipynb) predicts default from application-time features (loan amount, interest rate, term, grade, DTI, income, employment length, purpose, state). Payment columns such as `total_pymnt` and `recoveries` are excluded because they are only known after the loan runs.
+
+- **Data:** resolved loans only, pulled from the warehouse with SQL.
+- **Split:** train on loans issued 2007–2015 (829,355 loans), test on 2016–2017 (462,426 loans). No hyperparameter tuning, so there is no validation set.
+- **Results** (also in `notebooks/metrics.json`):
+
+| Model | AUC | KS | Brier |
+|---|---|---|---|
+| Interest rate only | 0.687 | 0.272 | n/a |
+| Logistic regression | 0.694 | 0.282 | 0.166 |
+| LightGBM | 0.700 | 0.289 | 0.166 |
+
+The gain over the interest rate alone is small, because Lending Club already prices risk into grade and rate. Grade, interest rate and term drive most of the LightGBM score (SHAP). Both models under-predict default on the test years (23.2% observed vs 18.5% in training), partly because 2017 loans only appear once resolved, which skews them toward early defaults. Ranking metrics are less affected than calibration.
 
 ---
 
@@ -106,6 +123,14 @@ uv run python -m src.spark_transform --csv data/raw/lending_club_loans.csv --out
 ```
 
 Writes `data/processed/raw_loans/`, `default_rate_by_grade/`, `avg_loan_by_year/`.
+
+### 6. Default model notebook (optional)
+
+Needs the warehouse from step 1. The modeling packages live in their own dependency group:
+
+```bash
+uv run --group modeling jupyter nbconvert --execute --to notebook --inplace notebooks/default_model.ipynb
+```
 
 ---
 
@@ -165,6 +190,9 @@ See [docs/architecture.md](docs/architecture.md) for the full data-flow write-up
 ├── docs/
 │   ├── architecture.md      # Data-flow write-up
 │   └── concepts.md          # Concepts used in this project
+├── notebooks/
+│   ├── default_model.ipynb  # logistic regression vs LightGBM, with outputs
+│   └── metrics.json         # saved model metrics
 ├── tests/                   # pytest suite (39 passing)
 ├── data/
 │   ├── raw/                  # lending_club_loans.csv (gitignored)

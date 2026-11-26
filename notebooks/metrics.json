@@ -1,0 +1,24 @@
+{
+  "train_years": "2007-2015",
+  "test_years": "2016-2017",
+  "train_loans": 829355,
+  "test_loans": 462426,
+  "test_default_rate": 0.2323,
+  "models": {
+    "Interest rate only": {
+      "AUC": 0.687,
+      "KS": 0.2724,
+      "Brier": null
+    },
+    "Logistic regression": {
+      "AUC": 0.6936,
+      "KS": 0.2821,
+      "Brier": 0.1663
+    },
+    "LightGBM": {
+      "AUC": 0.7001,
+      "KS": 0.2889,
+      "Brier": 0.1658
+    }
+  }
+}
