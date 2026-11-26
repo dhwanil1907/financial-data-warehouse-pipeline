@@ -20,7 +20,8 @@ End-to-end **Lending Club** loan data pipeline: raw CSV → star-schema DuckDB w
 - 13 analytical SQL queries using CTEs and window functions
 - Streamlit dashboard with 4 Plotly charts
 - Default-prediction notebook: logistic regression vs LightGBM on a time-based split, plus an approval-cutoff vs profit analysis
-- pytest suite (39 passing) and reproducible setup via uv
+- pytest suite (41 passing) and reproducible setup via uv
+- A 15 MB sample warehouse in the repo, so the dashboard runs without the 1.6 GB CSV
 
 ## Warehouse tables
 
@@ -98,6 +99,8 @@ Two findings hold in all three years: approving everyone earns the most total pr
 uv sync
 ```
 
+**Just want to see the dashboard?** Skip step 1. With no `warehouse.duckdb`, the dashboard opens `data/sample.duckdb`, a 1-in-40 sample of the loans (56,641 loans, 19.96% default rate against 19.98% on the full data). Run step 2 directly. Rebuild the sample from the full warehouse with `uv run python -m src.make_sample`.
+
 ### 1. Load the DuckDB warehouse
 
 ```bash
@@ -119,7 +122,7 @@ fact_loans: 2,260,668
 uv run streamlit run dashboard/app.py
 ```
 
-Open **http://localhost:8501**. Uses `warehouse.duckdb` by default — override with `DUCKDB_PATH=/path/to/db`.
+Open **http://localhost:8501**. Uses `warehouse.duckdb` by default, falls back to the sample, and can be pointed elsewhere with `DUCKDB_PATH=/path/to/db`.
 
 **DuckDB lock:** do not run the ETL pipeline and the dashboard against the same `.duckdb` file at the same time. Finish (or stop) the pipeline before opening Streamlit, or you will get a conflicting-lock `IOException`.
 
@@ -129,7 +132,7 @@ Open **http://localhost:8501**. Uses `warehouse.duckdb` by default — override 
 uv run pytest tests/ -v
 ```
 
-39 tests pass.
+41 tests pass.
 
 ### 4. SQL analytics (ad-hoc)
 
@@ -200,6 +203,7 @@ The source is one flat CSV, and at 2.26M rows a single DuckDB table would answer
 │   ├── extract.py           # CSV load + schema validation
 │   ├── transform.py         # dim/fact builders, data quality helpers
 │   ├── load.py              # DuckDB INSERT OR IGNORE helpers
+│   ├── make_sample.py       # builds data/sample.duckdb from the full warehouse
 │   └── db.py                # DuckDB connection + DDL runner
 ├── sql/
 │   ├── schema/
@@ -214,8 +218,9 @@ The source is one flat CSV, and at 2.26M rows a single DuckDB table would answer
 ├── notebooks/
 │   ├── default_model.ipynb  # logistic regression vs LightGBM, plus cutoff vs profit
 │   └── metrics.json         # saved model metrics
-├── tests/                   # pytest suite (39 passing)
+├── tests/                   # pytest suite (41 passing)
 ├── data/
+│   ├── sample.duckdb         # 1-in-40 sample warehouse (15 MB)
 │   └── raw/                  # lending_club_loans.csv (gitignored)
 ├── pyproject.toml           # dependencies and Python version
 ├── uv.lock                  # locked dependency versions

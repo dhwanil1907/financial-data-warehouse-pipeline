@@ -18,8 +18,15 @@ import streamlit as st
 ALLOWED_GRADES = frozenset("ABCDEFG")
 
 
+SAMPLE_DB = Path(__file__).resolve().parent.parent / "data" / "sample.duckdb"
+
+
 def _db_path() -> str:
-    return os.environ.get("DUCKDB_PATH", str(Path.cwd() / "warehouse.duckdb"))
+    """DUCKDB_PATH, else warehouse.duckdb, else the committed sample."""
+    if "DUCKDB_PATH" in os.environ:
+        return os.environ["DUCKDB_PATH"]
+    full = Path.cwd() / "warehouse.duckdb"
+    return str(full if full.is_file() else SAMPLE_DB)
 
 
 @st.cache_resource
@@ -79,6 +86,9 @@ def main() -> None:
     except FileNotFoundError as err:
         st.error(str(err))
         st.stop()
+
+    if Path(_db_path()) == SAMPLE_DB:
+        st.info("Showing a 1-in-40 sample of the loans. Build the full warehouse for exact numbers.")
 
     y_lo, y_hi = _year_bounds(con)
 
