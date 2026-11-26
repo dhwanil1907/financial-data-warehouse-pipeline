@@ -41,8 +41,5 @@ spark-warehouse/
 .idea/
 *.swp
 
-concept.md 
-
-# Raw Kaggle downloads
-data/accepted_*/
-data/rejected_*/
+# ── Linting ───────────────────────────────────────────────────────────────────
+.ruff_cache/
