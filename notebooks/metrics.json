@@ -93,6 +93,38 @@
         "return_on_funded": 0.0391
       }
     },
+    "by_vintage": {
+      "2013": {
+        "loans": 100422,
+        "default_rate": 0.1233,
+        "approve_all_profit_musd": 140.5869,
+        "approve_all_return": 0.1105,
+        "profit_peaks_at_share": 1.0,
+        "safest_60_model_profit_musd": 94.0231,
+        "safest_60_rate_profit_musd": 83.7828,
+        "f_g_return": 0.1047
+      },
+      "2014": {
+        "loans": 162570,
+        "default_rate": 0.1373,
+        "approve_all_profit_musd": 184.0566,
+        "approve_all_return": 0.09,
+        "profit_peaks_at_share": 1.0,
+        "safest_60_model_profit_musd": 124.2066,
+        "safest_60_rate_profit_musd": 113.2157,
+        "f_g_return": 0.0922
+      },
+      "2015": {
+        "loans": 283026,
+        "default_rate": 0.1489,
+        "approve_all_profit_musd": 237.4331,
+        "approve_all_return": 0.0655,
+        "profit_peaks_at_share": 1.0,
+        "safest_60_model_profit_musd": 169.3554,
+        "safest_60_rate_profit_musd": 161.2613,
+        "f_g_return": -0.0231
+      }
+    },
     "by_grade": {
       "A": {
         "default_rate": 0.0542,

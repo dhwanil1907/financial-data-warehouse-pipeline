@@ -75,8 +75,20 @@ The same notebook asks which loans a lender should approve. Profit per loan is `
 1. **Higher risk is mostly paid for in the interest rate.** Default rates run from 5.4% (A) to 46.1% (G), yet the return on money lent is 6.9% (A), 7.4% (B), 6.5% (C), 4.9% (D), 2.2% (E), −1.8% (F) and −5.3% (G).
 2. **Approving everyone earns the most.** Total profit is $237.4M (a 6.55% return). The riskiest fifth of applicants, with a 27.4% default rate, still earns $26.3M (3.9%).
 3. **A tighter cutoff raises return per dollar but gives up profit.** Approving only the safest 60% returns 7.4% but earns $169.4M, $68.1M less than approving all.
-4. **Only grades F and G lose money**, about $0.4M across 1,606 loans. Grade E is barely positive. Declining F and G is the one cutoff the data supports.
+4. **In 2015, only grades F and G lose money**, about $0.4M across 1,606 loans, and grade E is barely positive. That result is specific to 2015 (see the next section).
 5. **The model beats ranking by interest rate when approvals are limited.** At 60% approved it earns $169.4M vs $161.3M, and at 20% $63.4M vs $55.6M. The two converge when everyone is approved.
+
+### Does it hold for other years?
+
+The same analysis on 36-month loans issued in 2013 and 2014, each scored by a model trained only on earlier loans:
+
+| Issued | Loans | Default rate | Approve-all return | Safest 60%: model vs rate ranking | Grades F+G return |
+|---|---|---|---|---|---|
+| 2013 | 100,422 | 12.33% | 11.05% | $94.0M vs $83.8M | +10.47% |
+| 2014 | 162,570 | 13.73% | 9.00% | $124.2M vs $113.2M | +9.22% |
+| 2015 | 283,026 | 14.89% | 6.55% | $169.4M vs $161.3M | −2.31% |
+
+Two findings hold in all three years: approving everyone earns the most total profit, and the model beats ranking by interest rate at a 60% cutoff. The grade F/G result does not. Those grades were profitable in 2013 and 2014 and lost money only in 2015, as returns fell each year. So rejecting F and G is a call about one vintage's pricing, not a rule for every year. The 2013 model has the least history to learn from (loans issued through 2012).
 
 ---
 
