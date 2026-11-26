@@ -2,6 +2,8 @@
 
 End-to-end **Lending Club** loan data pipeline: raw CSV → star-schema DuckDB warehouse → SQL analytics and an interactive Streamlit dashboard.
 
+**Live demo:** [financial-data-warehouse-pipeline.streamlit.app](https://financial-data-warehouse-pipeline.streamlit.app/) (runs on a 1-in-40 sample of the loans)
+
 ![Streamlit dashboard showing KPIs and default rate by grade](docs/dashboard.png)
 
 **Stack:** Python 3.11 · pandas · DuckDB · Streamlit · Plotly · scikit-learn · LightGBM · SHAP · pytest · uv · ruff
