@@ -35,12 +35,17 @@ REQUIRED_COLUMNS: list[str] = [
 
 
 def load_raw_csv(path: str) -> pd.DataFrame:
-    """Read the Lending Club CSV and return a DataFrame.
+    """Read the Lending Club CSV and return a DataFrame of the required columns.
+
+    The raw file has ~150 columns but the pipeline uses only REQUIRED_COLUMNS,
+    so the rest are skipped at read time to save memory. A callable ``usecols``
+    (rather than a list) lets a missing column through, so validate_schema can
+    report it instead of pandas raising a less helpful error.
 
     Uses low_memory=False to prevent mixed-type inference warnings on the
     large (~2.26M row) dataset.
     """
-    return pd.read_csv(path, low_memory=False)
+    return pd.read_csv(path, usecols=lambda col: col in REQUIRED_COLUMNS, low_memory=False)
 
 
 def validate_schema(df: pd.DataFrame) -> None:

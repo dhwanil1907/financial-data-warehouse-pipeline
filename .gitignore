@@ -42,3 +42,7 @@ spark-warehouse/
 *.swp
 
 concept.md 
+
+# Raw Kaggle downloads
+data/accepted_*/
+data/rejected_*/

@@ -15,7 +15,10 @@ Covers (11 tests):
 - null_rate_report returns 0.0 for clean fixture data
 """
 import pandas as pd
+import pytest
 from src.transform import (
+    DataQualityError,
+    validate_fact_table,
     clean_rate_column,
     derive_is_default,
     parse_issue_date,
@@ -167,3 +170,27 @@ def test_null_rate_report_returns_zero_for_clean_data(sample_raw_df):
     report = null_rate_report(sample_raw_df)
     for col, rate in report.items():
         assert rate == 0.0, f"Expected 0.0 null rate for '{col}', got {rate}"
+
+
+def test_null_rate_report_limits_output_to_requested_columns(sample_raw_df):
+    report = null_rate_report(sample_raw_df, ["grade", "loan_status"])
+    assert set(report) == {"grade", "loan_status"}
+
+
+def test_validate_fact_table_passes_on_clean_fact(sample_raw_df):
+    fact = build_fact_table(sample_raw_df, *_build_all_dims(sample_raw_df))
+    validate_fact_table(fact)
+
+
+def test_validate_fact_table_raises_on_null_key(sample_raw_df):
+    fact = build_fact_table(sample_raw_df, *_build_all_dims(sample_raw_df))
+    fact.loc[0, "grade_id"] = None
+    with pytest.raises(DataQualityError, match="grade_id"):
+        validate_fact_table(fact)
+
+
+def test_validate_fact_table_raises_on_repeated_loan_id(sample_raw_df):
+    fact = build_fact_table(sample_raw_df, *_build_all_dims(sample_raw_df))
+    fact.loc[1, "loan_id"] = fact.loc[0, "loan_id"]
+    with pytest.raises(DataQualityError, match="repeated loan_id"):
+        validate_fact_table(fact)

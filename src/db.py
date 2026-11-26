@@ -9,7 +9,7 @@ import duckdb
 
 
 _DEFAULT_DB_PATH = "warehouse.duckdb"
-_DDL_PATH = Path("sql/schema/create_tables.sql")
+_DDL_PATH = Path(__file__).resolve().parent.parent / "sql" / "schema" / "create_tables.sql"
 
 
 def get_connection(db_path: str = _DEFAULT_DB_PATH) -> duckdb.DuckDBPyConnection:

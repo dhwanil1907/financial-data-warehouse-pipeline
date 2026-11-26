@@ -32,15 +32,16 @@ def get_connection() -> duckdb.DuckDBPyConnection:
 
 def _year_bounds(con: duckdb.DuckDBPyConnection) -> tuple[int, int]:
     row = con.execute("SELECT MIN(year), MAX(year) FROM dim_time").fetchone()
-    y_min, y_max = int(row[0]), int(row[1])
-    if y_min > y_max:
+    if row[0] is None or row[1] is None:
         return 2007, 2018
-    return y_min, y_max
+    return int(row[0]), int(row[1])
 
 
 def _grade_filter_sql(grades: list[str]) -> str:
     valid = [g for g in grades if g in ALLOWED_GRADES]
-    if not valid or len(valid) == len(ALLOWED_GRADES):
+    if not valid:
+        return "FALSE"
+    if len(valid) == len(ALLOWED_GRADES):
         return "TRUE"
     inner = ",".join(f"'{g}'" for g in valid)
     return f"g.grade IN ({inner})"

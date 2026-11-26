@@ -26,6 +26,21 @@ def test_load_raw_csv_returns_dataframe(tmp_path, sample_raw_df):
     assert len(df) == len(sample_raw_df)
 
 
+def test_load_raw_csv_keeps_only_required_columns(tmp_path, sample_raw_df):
+    csv_file = tmp_path / "loans.csv"
+    sample_raw_df.assign(unused_extra_column=1).to_csv(csv_file, index=False)
+    df = load_raw_csv(str(csv_file))
+    assert set(df.columns) == set(REQUIRED_COLUMNS)
+
+
+def test_load_raw_csv_lets_validate_schema_report_missing_column(tmp_path, sample_raw_df):
+    csv_file = tmp_path / "loans.csv"
+    sample_raw_df.drop(columns=["grade"]).to_csv(csv_file, index=False)
+    df = load_raw_csv(str(csv_file))
+    with pytest.raises(ValueError, match="grade"):
+        validate_schema(df)
+
+
 def test_validate_schema_passes_on_valid_data(sample_raw_df):
     # Should not raise
     validate_schema(sample_raw_df)

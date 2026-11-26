@@ -13,10 +13,17 @@ _TABLES = ["dim_borrower", "dim_loan_grade", "dim_time", "dim_purpose", "fact_lo
 
 
 def _insert_or_ignore(con: duckdb.DuckDBPyConnection, df: pd.DataFrame, table_name: str) -> None:
-    """Register df as a temporary view and INSERT OR IGNORE into table_name."""
+    """Register df as a temporary view and INSERT OR IGNORE into table_name.
+
+    Columns are matched by name, so the insert doesn't depend on DataFrame
+    column order lining up with the table definition.
+    """
+    columns = ", ".join(df.columns)
     con.register("_load_tmp", df)
     try:
-        con.execute(f"INSERT OR IGNORE INTO {table_name} SELECT * FROM _load_tmp")
+        con.execute(
+            f"INSERT OR IGNORE INTO {table_name} ({columns}) SELECT {columns} FROM _load_tmp"
+        )
     finally:
         con.unregister("_load_tmp")
 

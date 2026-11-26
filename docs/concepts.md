@@ -60,7 +60,7 @@ A **surrogate key** is a system-generated integer used as a primary key instead 
 
 Before transforming, the pipeline reports **null rates** for key columns and warns if any exceed 5%. This catches upstream data issues early rather than silently loading bad data.
 
-Applied in `src/pipeline.py` and `src/transform.py` (`null_rate_report`, `row_count_assertion`).
+Applied in `src/pipeline.py` and `src/transform.py` (`null_rate_report`). Null keys and repeated `loan_id` values in the fact table are hard failures (`validate_fact_table`).
 
 ---
 

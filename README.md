@@ -8,18 +8,17 @@ End-to-end **Lending Club** loan data pipeline: raw CSV → star-schema DuckDB w
 
 **Repo:** [github.com/dhwanil1907/financial-data-warehouse-pipeline](https://github.com/dhwanil1907/financial-data-warehouse-pipeline)
 
-**Docs:** [docs/concepts.md](docs/concepts.md) · [docs/architecture.md](docs/architecture.md) · [docs/erd.md](docs/erd.md)
-
+**Docs:** [docs/concepts.md](docs/concepts.md) · [docs/architecture.md](docs/architecture.md)
 ---
 
 ## Features
 
-- Schema validation and data-quality checks at the extract stage
-- Star schema (1 fact + 4 dimensions) with surrogate keys, loaded idempotently via `INSERT OR IGNORE`
+- Schema validation and data-quality checks that fail the run: required columns, null keys, repeated loan IDs
+- Star schema (1 fact + 4 dimensions) with surrogate keys, loaded in one transaction with row-count verification, so a failed run leaves the previous warehouse intact
 - 13 analytical SQL queries using CTEs and window functions
 - Streamlit dashboard with 4 Plotly charts
 - Optional PySpark aggregations written to Parquet
-- pytest suite (30 passing) and reproducible setup via uv
+- pytest suite (39 passing) and reproducible setup via uv
 
 ## Warehouse tables
 
@@ -90,7 +89,7 @@ Open **http://localhost:8501**. Uses `warehouse.duckdb` by default — override 
 uv run pytest tests/ -v
 ```
 
-30 pass, 5 Spark tests skipped unless a real JDK is on `PATH`.
+39 pass; the 5 Spark tests are skipped unless Spark can start (needs JDK 17 or 21).
 
 ### 4. SQL analytics (ad-hoc)
 
@@ -100,7 +99,7 @@ duckdb warehouse.duckdb < sql/analytics/01_default_rate_by_grade.sql
 
 All 13 queries are in `sql/analytics/`.
 
-### 5. Spark → Parquet (optional, requires JDK 17+)
+### 5. Spark → Parquet (optional, requires JDK 17 or 21)
 
 ```bash
 uv run python -m src.spark_transform --csv data/raw/lending_club_loans.csv --output-dir data/processed
@@ -115,22 +114,24 @@ Writes `data/processed/raw_loans/`, `default_rate_by_grade/`, `avg_loan_by_year/
 ```
 data/raw/lending_club_loans.csv
           │
-          ▼
-  ┌──────────────┐
-  │  extract.py  │  validate schema, drop footer rows
-  └──────┬───────┘
-         │
-         ▼
-  ┌──────────────┐
-  │ transform.py │  build dim + fact DataFrames, surrogates
-  └──────┬───────┘
-         │
-    ┌────┴────────────────────┐
-    ▼                         ▼
-┌──────────┐         ┌─────────────────────┐
-│  load.py │         │ spark_transform.py  │  (optional, needs JVM)
-│ → DuckDB │         │ → Parquet           │
-└────┬─────┘         └─────────────────────┘
+    ┌─────┴──────────────────────┐
+    ▼                            ▼
+┌──────────────┐        ┌─────────────────────┐
+│  extract.py  │        │ spark_transform.py  │  (optional, needs JVM;
+│ validate     │        │ reads the CSV       │   separate path)
+│ schema       │        │ directly → Parquet  │
+└──────┬───────┘        └─────────────────────┘
+       │
+       ▼
+┌──────────────┐
+│ transform.py │  drop footer rows, build dim + fact DataFrames, surrogates
+└──────┬───────┘
+       │
+       ▼
+┌──────────┐
+│  load.py │  one transaction, row counts verified
+│ → DuckDB │
+└────┬─────┘
      │
      ▼
 warehouse.duckdb
@@ -163,16 +164,13 @@ See [docs/architecture.md](docs/architecture.md) for the full data-flow write-up
 │   └── app.py               # Streamlit dashboard (4 Plotly charts)
 ├── docs/
 │   ├── architecture.md      # Data-flow write-up
-│   ├── concepts.md          # Concepts used in this project
-│   └── erd.md               # Normalization notes + dbdiagram.io source
-├── tests/                   # pytest suite (30 passing)
-└── data/
-    ├── raw/                  # lending_club_loans.csv (gitignored)
-    └── processed/            # Parquet output from Spark (gitignored)
+│   └── concepts.md          # Concepts used in this project
+├── tests/                   # pytest suite (39 passing)
+├── data/
+│   ├── raw/                  # lending_club_loans.csv (gitignored)
+│   └── processed/            # Parquet output from Spark (gitignored)
+├── pyproject.toml           # dependencies and Python version
+├── uv.lock                  # locked dependency versions
+├── .python-version          # Python 3.11 for uv
+└── .gitignore / .gitattributes
 ```
-
----
-
-## ERD
-
-See [docs/erd.md](docs/erd.md) — paste the dbdiagram.io block at [dbdiagram.io](https://dbdiagram.io/d) to visualise the star schema.

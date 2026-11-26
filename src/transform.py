@@ -11,8 +11,9 @@ Public API:
     build_dim_purpose(df)             purpose dimension DataFrame
     build_fact_table(df, *dims)       fact_loans DataFrame with FK surrogates
     filter_valid_loan_rows(df)        drop footer rows with non-numeric ``id``
-    null_rate_report(df)              {column: null_fraction} for every column
-    row_count_assertion(df, min_rows) raise AssertionError if row count too low
+    derive_is_default(loan_status)    True / False / NA (unresolved) default flag
+    validate_fact_table(fact)         raise DataQualityError on null keys or repeated loan_id
+    null_rate_report(df, columns)     {column: null_fraction} (all columns by default)
 """
 import pandas as pd
 
@@ -223,14 +224,31 @@ def build_fact_table(
 # Data quality helpers
 # ---------------------------------------------------------------------------
 
-def null_rate_report(df: pd.DataFrame) -> dict[str, float]:
-    """Return the fraction of null values per column."""
-    return {col: float(df[col].isna().mean()) for col in df.columns}
+class DataQualityError(ValueError):
+    """Raised when transformed data breaks a warehouse integrity rule."""
 
 
-def row_count_assertion(df: pd.DataFrame, min_rows: int) -> None:
-    """Raise AssertionError if df has fewer than min_rows rows."""
-    if len(df) < min_rows:
-        raise AssertionError(
-            f"Expected at least {min_rows} rows, got {len(df)}."
-        )
+FACT_KEY_COLUMNS = ["loan_id", "borrower_id", "grade_id", "time_id", "purpose_id"]
+
+
+def validate_fact_table(fact: pd.DataFrame) -> None:
+    """Raise DataQualityError if any key is null or a loan_id repeats.
+
+    The left joins in build_fact_table leave a null surrogate key when a row has
+    no matching dimension row, and INSERT OR IGNORE would silently drop repeated
+    loan_ids. Checking here makes both failures loud instead of silent.
+    """
+    null_counts = fact[FACT_KEY_COLUMNS].isna().sum()
+    null_keys = {col: int(n) for col, n in null_counts.items() if n > 0}
+    if null_keys:
+        raise DataQualityError(f"fact_loans has null keys (column: rows): {null_keys}")
+
+    duplicate_ids = int(fact["loan_id"].duplicated().sum())
+    if duplicate_ids:
+        raise DataQualityError(f"fact_loans has {duplicate_ids} repeated loan_id value(s)")
+
+
+def null_rate_report(df: pd.DataFrame, columns: list[str] | None = None) -> dict[str, float]:
+    """Return the fraction of null values per column (all columns by default)."""
+    selected = list(df.columns) if columns is None else columns
+    return {col: float(df[col].isna().mean()) for col in selected}

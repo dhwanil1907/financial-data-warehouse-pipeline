@@ -36,10 +36,19 @@ def _java_runtime_ok() -> bool:
     return proc.returncode == 0 and "version" in err
 
 
-pytestmark = pytest.mark.skipif(
-    not _java_runtime_ok(),
-    reason="PySpark needs a working JDK (install JDK 17+; macOS stub java is not enough).",
-)
+def _spark_unavailable_reason() -> str | None:
+    """Return why Spark can't run here, or None when a session starts."""
+    if not _java_runtime_ok():
+        return "PySpark needs a working JDK (install JDK 17+; macOS stub java is not enough)."
+    try:
+        create_spark_session("financial-dw-probe").stop()
+    except Exception as err:  # JVM start-up failures surface as assorted Py4J/Java errors
+        return f"Spark could not start on this JDK ({type(err).__name__}); try JDK 17 or 21."
+    return None
+
+
+_SPARK_SKIP_REASON = _spark_unavailable_reason()
+pytestmark = pytest.mark.skipif(_SPARK_SKIP_REASON is not None, reason=_SPARK_SKIP_REASON or "")
 
 
 @pytest.fixture
