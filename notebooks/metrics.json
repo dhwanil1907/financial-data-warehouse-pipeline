@@ -16,9 +16,9 @@
       "Brier": 0.1663
     },
     "LightGBM": {
-      "AUC": 0.6999,
+      "AUC": 0.7001,
       "KS": 0.2879,
-      "Brier": 0.1658
+      "Brier": 0.1657
     }
   },
   "profit_cohort": {
@@ -31,32 +31,32 @@
     "profit_peaks_at_approve_share": 1.0,
     "by_approve_share": {
       "0.2": {
-        "default_rate": 0.0475,
-        "model_profit_musd": 62.6398,
-        "model_return": 0.0713,
-        "rate_profit_musd": 55.6112,
-        "rate_return": 0.0679
+        "default_rate": 0.0477,
+        "model_profit_musd": 63.3912,
+        "model_return": 0.0716,
+        "rate_profit_musd": 55.5536,
+        "rate_return": 0.0677
       },
       "0.4": {
-        "default_rate": 0.0718,
-        "model_profit_musd": 118.9797,
+        "default_rate": 0.0716,
+        "model_profit_musd": 119.043,
         "model_return": 0.0732,
-        "rate_profit_musd": 109.4125,
-        "rate_return": 0.0698
+        "rate_profit_musd": 109.6299,
+        "rate_return": 0.0699
       },
       "0.6": {
-        "default_rate": 0.0928,
-        "model_profit_musd": 169.6342,
+        "default_rate": 0.0931,
+        "model_profit_musd": 169.3554,
         "model_return": 0.0738,
-        "rate_profit_musd": 161.3985,
+        "rate_profit_musd": 161.2613,
         "rate_return": 0.0715
       },
       "0.8": {
-        "default_rate": 0.1174,
-        "model_profit_musd": 211.3784,
+        "default_rate": 0.1176,
+        "model_profit_musd": 211.1013,
         "model_return": 0.0716,
-        "rate_profit_musd": 206.0543,
-        "rate_return": 0.0703
+        "rate_profit_musd": 205.9431,
+        "rate_return": 0.0702
       },
       "1.0": {
         "default_rate": 0.1489,
@@ -68,29 +68,29 @@
     },
     "by_risk_quintile": {
       "1 (safest)": {
-        "default_rate": 0.0475,
-        "profit_musd": 62.6309,
-        "return_on_funded": 0.0713
+        "default_rate": 0.0477,
+        "profit_musd": 63.3926,
+        "return_on_funded": 0.0716
       },
       "2": {
-        "default_rate": 0.0961,
-        "profit_musd": 56.35,
-        "return_on_funded": 0.0755
-      },
-      "3": {
-        "default_rate": 0.1347,
-        "profit_musd": 50.6534,
+        "default_rate": 0.0955,
+        "profit_musd": 55.6519,
         "return_on_funded": 0.0751
       },
+      "3": {
+        "default_rate": 0.136,
+        "profit_musd": 50.3109,
+        "return_on_funded": 0.0752
+      },
       "4": {
-        "default_rate": 0.1912,
-        "profit_musd": 41.7442,
-        "return_on_funded": 0.064
+        "default_rate": 0.191,
+        "profit_musd": 41.7458,
+        "return_on_funded": 0.0637
       },
       "5 (riskiest)": {
-        "default_rate": 0.2748,
-        "profit_musd": 26.0547,
-        "return_on_funded": 0.0387
+        "default_rate": 0.2741,
+        "profit_musd": 26.3318,
+        "return_on_funded": 0.0391
       }
     },
     "by_grade": {
