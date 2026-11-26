@@ -19,7 +19,7 @@ End-to-end **Lending Club** loan data pipeline: raw CSV → star-schema DuckDB w
 
 - Schema validation and data-quality checks that fail the run: required columns, null keys, repeated loan IDs
 - Star schema (1 fact + 4 dimensions) with surrogate keys, loaded in one transaction with row-count verification, so a failed run leaves the previous warehouse intact
-- 13 analytical SQL queries using CTEs and window functions
+- 13 analytical SQL queries: CTEs throughout, window functions in 9 of them
 - Streamlit dashboard with 4 Plotly charts
 - Default-prediction notebook: logistic regression vs LightGBM on a time-based split, plus an approval-cutoff vs profit analysis
 - pytest suite (41 passing) and reproducible setup via uv
@@ -210,7 +210,7 @@ The source is one flat CSV, and at 2.26M rows a single DuckDB table would answer
 ├── sql/
 │   ├── schema/
 │   │   └── create_tables.sql  # Star schema DDL (5 tables)
-│   └── analytics/             # 13 analytical queries (CTEs + window fns), see its README
+│   └── analytics/             # 13 analytical queries (CTEs; window fns in 9), see its README
 ├── dashboard/
 │   └── app.py               # Streamlit dashboard (4 Plotly charts)
 ├── docs/

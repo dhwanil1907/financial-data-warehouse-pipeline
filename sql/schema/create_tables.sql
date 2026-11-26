@@ -85,7 +85,8 @@ CREATE TABLE IF NOT EXISTS dim_purpose (
 -- Monetary columns (loan_amnt, funded_amnt, etc.) are in USD.
 -- int_rate is stored as a plain decimal (e.g. 0.1299 for 12.99%)
 --   — the % symbol is stripped during the transform step.
--- is_default is TRUE for defaulted loans (Charged Off, Default), FALSE for
+-- is_default is TRUE for defaulted loans (Charged Off, Default, and the
+-- credit-policy Charged Off status), FALSE for
 -- Fully Paid, and NULL while the loan is still in progress, so AVG(is_default)
 -- is the default rate over resolved loans only.
 -- ------------------------------------------------------------

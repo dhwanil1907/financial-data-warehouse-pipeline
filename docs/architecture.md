@@ -30,8 +30,8 @@ ASCII overview (raw file → consumption):
             ├──────────────────────┬──────────────────────┐
             ▼                      ▼                      ▼
   sql/analytics/*.sql      dashboard/app.py      notebooks/default_model
-  (13 queries, CTEs /      (Streamlit + Plotly)  (default model + profit
-   windows)                                       analysis)
+  (13 queries, CTEs,       (Streamlit + Plotly)  (default model + profit
+   9 with windows)                                analysis)
 ```
 
 ## Components
