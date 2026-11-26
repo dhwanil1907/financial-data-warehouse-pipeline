@@ -16,9 +16,119 @@
       "Brier": 0.1663
     },
     "LightGBM": {
-      "AUC": 0.7001,
-      "KS": 0.2889,
+      "AUC": 0.6999,
+      "KS": 0.2879,
       "Brier": 0.1658
+    }
+  },
+  "profit_cohort": {
+    "description": "36-month loans issued in 2015, scored by a model trained on loans issued before 2015",
+    "loans": 283026,
+    "approve_all": {
+      "profit_musd": 237.4,
+      "return_on_funded": 0.0655
+    },
+    "profit_peaks_at_approve_share": 1.0,
+    "by_approve_share": {
+      "0.2": {
+        "default_rate": 0.0475,
+        "model_profit_musd": 62.6398,
+        "model_return": 0.0713,
+        "rate_profit_musd": 55.6112,
+        "rate_return": 0.0679
+      },
+      "0.4": {
+        "default_rate": 0.0718,
+        "model_profit_musd": 118.9797,
+        "model_return": 0.0732,
+        "rate_profit_musd": 109.4125,
+        "rate_return": 0.0698
+      },
+      "0.6": {
+        "default_rate": 0.0928,
+        "model_profit_musd": 169.6342,
+        "model_return": 0.0738,
+        "rate_profit_musd": 161.3985,
+        "rate_return": 0.0715
+      },
+      "0.8": {
+        "default_rate": 0.1174,
+        "model_profit_musd": 211.3784,
+        "model_return": 0.0716,
+        "rate_profit_musd": 206.0543,
+        "rate_return": 0.0703
+      },
+      "1.0": {
+        "default_rate": 0.1489,
+        "model_profit_musd": 237.4331,
+        "model_return": 0.0655,
+        "rate_profit_musd": 237.4331,
+        "rate_return": 0.0655
+      }
+    },
+    "by_risk_quintile": {
+      "1 (safest)": {
+        "default_rate": 0.0475,
+        "profit_musd": 62.6309,
+        "return_on_funded": 0.0713
+      },
+      "2": {
+        "default_rate": 0.0961,
+        "profit_musd": 56.35,
+        "return_on_funded": 0.0755
+      },
+      "3": {
+        "default_rate": 0.1347,
+        "profit_musd": 50.6534,
+        "return_on_funded": 0.0751
+      },
+      "4": {
+        "default_rate": 0.1912,
+        "profit_musd": 41.7442,
+        "return_on_funded": 0.064
+      },
+      "5 (riskiest)": {
+        "default_rate": 0.2748,
+        "profit_musd": 26.0547,
+        "return_on_funded": 0.0387
+      }
+    },
+    "by_grade": {
+      "A": {
+        "default_rate": 0.0542,
+        "profit_musd": 69.901,
+        "return_on_funded": 0.0689
+      },
+      "B": {
+        "default_rate": 0.119,
+        "profit_musd": 85.3106,
+        "return_on_funded": 0.0743
+      },
+      "C": {
+        "default_rate": 0.1944,
+        "profit_musd": 60.2371,
+        "return_on_funded": 0.0654
+      },
+      "D": {
+        "default_rate": 0.2622,
+        "profit_musd": 19.744,
+        "return_on_funded": 0.0491
+      },
+      "E": {
+        "default_rate": 0.3284,
+        "profit_musd": 2.6241,
+        "return_on_funded": 0.0216
+      },
+      "F": {
+        "default_rate": 0.424,
+        "profit_musd": -0.257,
+        "return_on_funded": -0.0181
+      },
+      "G": {
+        "default_rate": 0.4612,
+        "profit_musd": -0.1267,
+        "return_on_funded": -0.0533
+      }
     }
   }
 }

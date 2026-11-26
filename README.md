@@ -18,7 +18,7 @@ End-to-end **Lending Club** loan data pipeline: raw CSV → star-schema DuckDB w
 - 13 analytical SQL queries using CTEs and window functions
 - Streamlit dashboard with 4 Plotly charts
 - Optional PySpark aggregations written to Parquet
-- Default-prediction notebook: logistic regression vs LightGBM on a time-based split
+- Default-prediction notebook: logistic regression vs LightGBM on a time-based split, plus an approval-cutoff vs profit analysis
 - pytest suite (39 passing) and reproducible setup via uv
 
 ## Warehouse tables
@@ -66,6 +66,16 @@ Default risk rises monotonically from grade A to G — roughly 8× higher for G 
 | LightGBM | 0.700 | 0.289 | 0.166 |
 
 The gain over the interest rate alone is small, because Lending Club already prices risk into grade and rate. Grade, interest rate and term drive most of the LightGBM score (SHAP). Both models under-predict default on the test years (23.2% observed vs 18.5% in training), partly because 2017 loans only appear once resolved, which skews them toward early defaults. Ranking metrics are less affected than calibration.
+
+## Findings: approval cutoff vs profit
+
+The same notebook asks which loans a lender should approve. Profit per loan is `total_pymnt − funded_amnt`, so it includes interest and recoveries but ignores funding cost, servicing and the time value of money. It is measured on **36-month loans issued in 2015** (283,026 loans, all past their full term by the end of the data), scored by a LightGBM trained only on earlier loans (AUC 0.682 on this cohort). Recent loans can't be used: resolved 2016–2017 loans return −4.3% overall, because loans only appear in the data once they resolve.
+
+1. **Higher risk is mostly paid for in the interest rate.** Default rates run from 5.4% (A) to 46.1% (G), yet the return on money lent is 6.9% (A), 7.4% (B), 6.5% (C), 4.9% (D), 2.2% (E), −1.8% (F) and −5.3% (G).
+2. **Approving everyone earns the most.** Total profit is $237.4M (a 6.55% return). The riskiest fifth of applicants, with a 27.5% default rate, still earns $26.1M (3.9%).
+3. **A tighter cutoff raises return per dollar but gives up profit.** Approving only the safest 60% returns 7.4% but earns $169.6M, $67.8M less than approving all.
+4. **Only grades F and G lose money**, about $0.4M across 1,606 loans. Grade E is barely positive. Declining F and G is the one cutoff the data supports.
+5. **The model beats ranking by interest rate when approvals are limited.** At 60% approved it earns $169.6M vs $161.4M, and at 20% $62.6M vs $55.6M. The two converge when everyone is approved.
 
 ---
 
@@ -191,7 +201,7 @@ See [docs/architecture.md](docs/architecture.md) for the full data-flow write-up
 │   ├── architecture.md      # Data-flow write-up
 │   └── concepts.md          # Concepts used in this project
 ├── notebooks/
-│   ├── default_model.ipynb  # logistic regression vs LightGBM, with outputs
+│   ├── default_model.ipynb  # logistic regression vs LightGBM, plus cutoff vs profit
 │   └── metrics.json         # saved model metrics
 ├── tests/                   # pytest suite (39 passing)
 ├── data/
